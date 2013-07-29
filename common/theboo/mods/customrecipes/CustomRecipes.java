@@ -1,4 +1,5 @@
 package theboo.mods.customrecipes;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,10 +11,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -21,17 +24,27 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.src.ModLoader;
-import theboo.mods.customrecipes.recipewriter.RecipePad;
+import net.minecraftforge.common.Configuration;
+
+import org.lwjgl.input.Keyboard;
+
+import theboo.mods.customrecipes.handlers.CRKeyHandler;
+import theboo.mods.customrecipes.handlers.CRTickHandler;
+import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.PostInit;
+import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "CustomRecipes", name = "Custom Recipes", version = "4.2.0")
+@Mod(modid = "customrecipes", name = "Custom Recipes", version = "4.2.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class CustomRecipes implements IFuelHandler {
 	
@@ -39,7 +52,11 @@ public class CustomRecipes implements IFuelHandler {
 	private Hashtable<String,Integer> fuels = new Hashtable<String,Integer>();
 	private final int DICT_VERSION_CURRENT = 37;
 	private int DICT_VERSION = 0;
-	private boolean writer = true;
+	private boolean keybindings;
+    public static Configuration config;
+    
+    public String logPath = (getWorkingFolder()+"/CustomRecipes.log");
+
 	
 	@Instance("customrecipes")
 	public static CustomRecipes instance;
@@ -52,14 +69,13 @@ public class CustomRecipes implements IFuelHandler {
     /**
      * tries to get a file using the path from either minecraft or minecraft server
      * 
-     * @param dave
-     * @return
+     * @return the working minecraft path
      */
-    private File getWorkingFolder(){
+    public File getWorkingFolder(){
         File toBeReturned;
         try{
             if (FMLCommonHandler.instance().getSide().isClient()){
-                toBeReturned = ModLoader.getMinecraftInstance().getMinecraftDir();
+                toBeReturned = ModLoader.getMinecraftInstance().getMinecraft().mcDataDir;
             }
             else{
                 toBeReturned = ModLoader.getMinecraftServerInstance().getFile("");
@@ -68,7 +84,7 @@ public class CustomRecipes implements IFuelHandler {
             
         }
         catch(Exception ex){
-            log(Level.FINE, "Couldn't get the path to the mod directory.");
+            log(Level.SEVERE, "Couldn't get the path to the mod directory.");
         }
         return null;
     }
@@ -87,7 +103,7 @@ public class CustomRecipes implements IFuelHandler {
 	public void log(Level level, String foo){
 		try{
 			if(fstream == null || log == null){
-				fstream = new FileWriter(getWorkingFolder()+"/CustomRecipes.log");
+				fstream = new FileWriter(logPath);
 				log = new BufferedWriter(fstream);
 			}
 			log.write(foo+"\n");
@@ -105,22 +121,49 @@ public class CustomRecipes implements IFuelHandler {
 		}catch(IOException e){}
 	}
 	
-	@PostInit
-	public void load(FMLPostInitializationEvent event){
-		System.out.println();
-		System.out.println();
-		log(Level.INFO, "=== CustomRecipes ===\n *** Created by MightyPork *** \n *** Developed by TheBoo ***\n\n"+(new Date()).toString()+"\n\nSave your recipe files into .minecraft/mods/customrecipes.\n");
-		GameRegistry.registerFuelHandler(this);
-		
-        //NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
-		loadRecipes();
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent fml){		
+	    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+	        public void run() {
+	        	System.out.println("Closing Custom Recipes log...");
+	        	logClose();
+	        }
+	    }, "Shutdown-thread"));
+	    
+		config = new Configuration(fml.getSuggestedConfigurationFile());
+		loadConfig(config);
 	}
 	
+	@EventHandler
+	public void load(FMLPostInitializationEvent fml){
+		System.out.println();
+		System.out.println();
+		
+		log(Level.INFO, "=== CustomRecipes ===\n *** Created by MightyPork *** \n *** Developed by TheBoo ***\n\n"+(new Date()).toString()+"\n\nSave your recipe files into .minecraft/mods/customrecipes.\n");
+		
+		GameRegistry.registerFuelHandler(this);
+		
+		loadRecipes();
+		
+		if(keybindings) {
+			addKeybinds();
+		}
+	}
 	
+	private void addKeybinds() {
+		KeyBinding[] key = {new KeyBinding("Reload Custom Recipes recipes", Keyboard.KEY_R)};
+        boolean[] repeat = {false};
+        KeyBindingRegistry.registerKeyBinding(new CRKeyHandler(key, repeat));     
+        TickRegistry.registerTickHandler(new CRTickHandler(EnumSet.of(TickType.PLAYER)), Side.SERVER);
+	}
+	
+	private void loadConfig(Configuration c) {
+		c.load();
+		keybindings = c.get(c.CATEGORY_GENERAL, "Enable reloading keybind", true).getBoolean(true);
+    	c.save();
+	}
 
-	private void loadRecipes()
-	{
-
+	public void loadRecipes()	{
         boolean fail=!(new File(getWorkingFolder()+"/mods/customrecipes/dictionary.txt")).exists();
         
         if(fail){
@@ -181,15 +224,6 @@ public class CustomRecipes implements IFuelHandler {
         log(Level.INFO, "Loading custom dictionary: dictionary_custom.txt");
         loadRecipeFile(getWorkingFolder() + "/mods/customrecipes/dictionary_custom.txt", true);
         
-
-        writer = false;
-        
-        if(writer)
-        {
-            log(Level.INFO, "Opening the writer...");
-            RecipePad writer = new RecipePad();
-            writer.setVisible(true);
-        }
         
         //do all other recipes
         String[] children = dir.list(filter);
@@ -215,11 +249,6 @@ public class CustomRecipes implements IFuelHandler {
         }
         
         log(Level.INFO, "Recipes loaded.\n\n");
-        logClose();
-	}
-	public CustomRecipes()
-	{
-		//pass
 	}
 
 	private void regenerateDictionary(){
@@ -256,6 +285,7 @@ public class CustomRecipes implements IFuelHandler {
 	private int getAnyNumberFromString(String str){
 		try{
 			int tmpi=Integer.valueOf(str);
+			System.out.println(tmpi);
 			return tmpi;
 		}catch(NumberFormatException e){
 			return 0;
