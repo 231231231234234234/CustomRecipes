@@ -268,16 +268,15 @@ public class CustomRecipes implements IFuelHandler {
 	
     private int getNumberFromString(String str)
     {
-        try
-        {
+        try{
             int tmpi = Integer.valueOf(str).intValue();
-            // if (tmpi < 0);
-            // return 0;
-            //return (tmpi < 0 ? 0 : tmpi); // fix return value that broke fuel
-            return (tmpi < -1 ? 0 : tmpi) ;                             // recipes
-        }
-        catch (NumberFormatException e)
+            if(tmpi < -1) {
+            	return 32767;
+            }
+            return (tmpi < -1 ? 0 : tmpi) ;                             
+        } catch (NumberFormatException e)
         {        
+        	System.out.println("Oops");
             return 0;
         }
     }
@@ -285,9 +284,12 @@ public class CustomRecipes implements IFuelHandler {
 	private int getAnyNumberFromString(String str){
 		try{
 			int tmpi=Integer.valueOf(str);
-			System.out.println(tmpi);
+			if(tmpi == -1) {
+				return 32767;
+			}
 			return tmpi;
 		}catch(NumberFormatException e){
+        	System.out.println("Oops2");
 			return 0;
 		}
 	}
@@ -600,27 +602,20 @@ public class CustomRecipes implements IFuelHandler {
 			errorAlert(fpath,entryOrig,ERR_MSG_SYNTAX);
 			return;
 		}
-		
 
 		String def = tokens[1];
 
 		if(def != null){
-
 			if(tokens[0].equals("DICTIONARY_VERSION")){
 				DICT_VERSION=getNumberFromString(def);
-			}else{
-				
+			}else{			
 				ItemStack stack = getRecipeStack(def);
 				if(stack != null){
-
 					dict.put((String)tokens[0].toLowerCase(),(ItemStack)stack);
-
 				}else{
-
 					errorUndefined(fpath,entryOrig,def);
 					return;
 				}
-
 			}
 		}else{
 			errorSyntax(fpath,entryOrig);
