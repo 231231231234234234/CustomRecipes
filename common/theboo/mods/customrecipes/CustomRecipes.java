@@ -30,12 +30,14 @@ import org.lwjgl.input.Keyboard;
 
 import theboo.mods.customrecipes.handlers.CRKeyHandler;
 import theboo.mods.customrecipes.handlers.CRTickHandler;
+import theboo.mods.customrecipes.proxy.CommonProxy;
 import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -60,6 +62,9 @@ public class CustomRecipes implements IFuelHandler {
 	
 	@Instance("customrecipes")
 	public static CustomRecipes instance;
+	
+	@SidedProxy(clientSide = "theboo.mods.customrecipes.proxy.ClientProxy", serverSide = "theboo.mods.customrecipes.proxy.CommonProxy") 
+	public static CommonProxy proxy;
 	
 	public String getPriorities()
 	{
@@ -146,14 +151,12 @@ public class CustomRecipes implements IFuelHandler {
 		loadRecipes();
 		
 		if(keybindings) {
-			addKeybinds();
+			proxy.addKeybindings();
+			addTickhandler();
 		}
 	}
 	
-	private void addKeybinds() {
-		KeyBinding[] key = {new KeyBinding("Reload Custom Recipes recipes", Keyboard.KEY_R)};
-        boolean[] repeat = {false};
-        KeyBindingRegistry.registerKeyBinding(new CRKeyHandler(key, repeat));     
+	private void addTickhandler() {   
         TickRegistry.registerTickHandler(new CRTickHandler(EnumSet.of(TickType.PLAYER)), Side.SERVER);
 	}
 	
