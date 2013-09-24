@@ -229,7 +229,7 @@ public class RecipeLoader implements IFuelHandler {
 
 	private boolean isValidItem(int i){
 		if(i>0 && i <32000){
-			if((i<256 && Block.blocksList[i]!=null) || (i>=256 && Item.itemsList[i]!=null)){
+			if((i<4096 && Block.blocksList[i]!=null) || (i>=256 && Item.itemsList[i]!=null)){
 				return true;
 			}else{
 				return false;
@@ -318,7 +318,7 @@ public class RecipeLoader implements IFuelHandler {
 					
 					int dmg = getAnyNumberFromString(parts[1]);
 					
-					if(dmg >= 32000){
+					if(dmg >= 32000 && dmg != 32767){
 						//invalid damage
 						errorAlert(path,str,"Warning - invalid item damage.");
 					}else{
