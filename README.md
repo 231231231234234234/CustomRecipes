@@ -10,8 +10,10 @@ Have a suggestion? Does the mod crash? Did you find a bug? Those are some of man
 2. Go to the issues page.
 3. Click the `New Issue` button at the top.
 4. Enter your Issue's title (something that summarizes your issue), and then create a detailed description about the issue as well as steps to re-create it if it's a bug.
-5. (Optional) Assign the issue to TheBoo. *I will notice it quicker if you do so.*
-6. Choose the kind of the issue.
-7. Choose the priority (if it's a critical bug or crash, pick a high priority. If it's a minor bug, pick a low priority).
+5. (Optional) Assign the issue to TheBoo. *I will notice it quicker if you do so.* *This is not possible if you are not a contributor.*
+6. Choose the kind of the issue. *This is not possible if you are not a contributor.*
+7. Choose the priority (if it's a critical bug or crash, pick a high priority. If it's a minor bug, pick a low priority). *This is not possible if you are not a contributor.*
 8. Attach a screenshot, it'd help alot.
 9. Click the `Create New Issue` button at the bottom.
+
+
