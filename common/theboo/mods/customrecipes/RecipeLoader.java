@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
+import java.lang.StringIndexOutOfBoundsException;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -179,24 +180,29 @@ public class RecipeLoader implements IFuelHandler {
 	
 	public void generateAliasByLocalizedName() {
 		Logger.log(Level.INFO, "Adding all the items localized names as dictionary entries...");
+		
+		try {
+			for(Item item : Item.itemsList) {
+				if(item == null) continue;
 				
-		for(Item item : Item.itemsList) {
-			if(item == null) continue;
+				dict.put(item.getStatName().replace(" ", ""), new ItemStack(item, 1, 0));
+				dict.put(item.getStatName().replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
+				dict.put(item.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(item, 1, 0));
+				dict.put(item.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
+			}
 			
-			dict.put(item.getStatName().replace(" ", ""), new ItemStack(item, 1, 0));
-			dict.put(item.getStatName().replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
-			dict.put(item.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(item, 1, 0));
-			dict.put(item.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
-		}
-		
-		
-		for(Block block : Block.blocksList) {
-			if(block == null) continue;
+			
+			for(Block block : Block.blocksList) {
+				if(block == null) continue;
 
-			dict.put(block.getLocalizedName().replace(" ", ""), new ItemStack(block, 1, 0));
-			dict.put(block.getLocalizedName().replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
-			dict.put(block.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(block, 1, 0));
-			dict.put(block.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
+				dict.put(block.getLocalizedName().replace(" ", ""), new ItemStack(block, 1, 0));
+				dict.put(block.getLocalizedName().replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
+				dict.put(block.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(block, 1, 0));
+				dict.put(block.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
+			}
+		} catch (StringIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			Logger.log(Level.WARNING, "Failed to add items unlocalized names as dictionary entries, BUT prevented a crash. This is probably an issue from a mod developer.");
 		}
 		
 	}
