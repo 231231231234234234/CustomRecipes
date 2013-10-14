@@ -1,29 +1,27 @@
 package theboo.mods.customrecipes;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.logging.Level;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.Configuration;
-import theboo.mods.customrecipes.handlers.CRTickHandler;
+import net.minecraftforge.common.MinecraftForge;
+import theboo.mods.customrecipes.handlers.CustomRecipesEvents;
+import theboo.mods.customrecipes.lib.Reference;
 import theboo.mods.customrecipes.logger.Logger;
 import theboo.mods.customrecipes.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * CustomRecipes CustomRecipes
@@ -49,12 +47,10 @@ import cpw.mods.fml.relauncher.Side;
  * @author TheBoo
  *   
  */
-@Mod(modid = "customrecipes", name = "Custom Recipes", version = "4.4.1")
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION_NUMBER, dependencies = Reference.DEPENDENCIES)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class CustomRecipes {
 	
-
-	private boolean keybindings;
     public static Configuration config;
         
     public RecipeLoader loader = new RecipeLoader();
@@ -63,7 +59,7 @@ public class CustomRecipes {
 	@Instance("customrecipes")
 	public static CustomRecipes instance;
 	
-	@SidedProxy(clientSide = "theboo.mods.customrecipes.proxy.ClientProxy", serverSide = "theboo.mods.customrecipes.proxy.CommonProxy") 
+	@SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS) 
 	public static CommonProxy proxy;
 	
 	public String getPriorities()
@@ -98,7 +94,7 @@ public class CustomRecipes {
 
 	// for the log
 	
-	@EventHandler
+    @EventHandler
 	public void preInit(final FMLPreInitializationEvent fml){		
 	    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 	        public void run() {
@@ -109,6 +105,8 @@ public class CustomRecipes {
 	    
 		config = new Configuration(fml.getSuggestedConfigurationFile());
 		loadConfig(config);
+		
+		MinecraftForge.EVENT_BUS.register(new CustomRecipesEvents());
 	}
 	
 	@EventHandler
@@ -121,20 +119,21 @@ public class CustomRecipes {
 		GameRegistry.registerFuelHandler(loader);
 		
 		loader.loadRecipes();
-		
-		if(keybindings) {
-			proxy.addKeybindings();
-			addTickhandler();
-		}
-	}
-	
-	private void addTickhandler() {   
-        TickRegistry.registerTickHandler(new CRTickHandler(EnumSet.of(TickType.PLAYER)), Side.SERVER);
 	}
 	
 	private void loadConfig(Configuration c) {
 		c.load();
-		keybindings = c.get(c.CATEGORY_GENERAL, "Enable reloading keybind", true).getBoolean(true);
+		Reference.DEBUG = c.get(c.CATEGORY_GENERAL, "Enable Extensive Log Messages [Debug Mode]", false).getBoolean(false);
     	c.save();
+	}
+	
+	public static URL getUpdateURL() {
+		try {
+			return new URL("http://pastebin.com/raw.php?i=T3afBrCS");
+		}
+		catch(MalformedURLException ex) {
+			System.out.println("Woops, URL was wrong!");
+			return null;
+		}
 	}
 }
