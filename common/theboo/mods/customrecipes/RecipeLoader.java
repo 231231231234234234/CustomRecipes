@@ -22,6 +22,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import theboo.mods.customrecipes.dictionary.Dictionary;
+import theboo.mods.customrecipes.lib.Reference;
 import theboo.mods.customrecipes.logger.Logger;
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -84,7 +85,7 @@ public class RecipeLoader implements IFuelHandler {
             Logger.log(Level.INFO, "Creating dictionary file.\n");
         }
 
-        loadRecipeFile(CustomRecipes.instance.getWorkingFolder()+"/mods/customrecipes/dictionary.txt", false);
+        loadRecipeFile(CustomRecipes.instance.getWorkingFolder()+"/mods/customrecipes/dictionary.txt", Reference.DEBUG);
         Logger.log(Level.INFO, "Loading dictionary.txt");
 
         if(DICT_VERSION != Dictionary.DICT_VERSION_CURRENT){
