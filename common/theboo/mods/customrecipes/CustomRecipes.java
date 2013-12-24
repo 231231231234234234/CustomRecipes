@@ -66,12 +66,7 @@ public class CustomRecipes {
 	{
 		return "after:*";
 	}
-	
-    /**
-     * tries to get a file using the path from either minecraft or minecraft server
-     * 
-     * @return the working minecraft path
-     */
+
     public File getWorkingFolder(){
         File toBeReturned;
         try{
@@ -89,10 +84,6 @@ public class CustomRecipes {
         }
         return null;
     }
-
-
-
-	// for the log
 	
     @EventHandler
 	public void preInit(final FMLPreInitializationEvent fml){		
