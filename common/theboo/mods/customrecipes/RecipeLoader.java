@@ -419,7 +419,7 @@ public class RecipeLoader implements IFuelHandler {
 				
 			}else if(entry.length()>= 13 && entry.substring(0,6).equals("shaped")){
                
-			    Logger.log(Level.INFO, "Found smelting syntax in "+file_path);
+			    Logger.log(Level.INFO, "Found shaped syntax in "+file_path);
 				parseRecipeShaped(file_path, entryOrig, entry);
 				
 			}
