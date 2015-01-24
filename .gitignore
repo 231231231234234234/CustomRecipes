@@ -1,1 +1,18 @@
 common/theboo/mods/customrecipes/mod_CustomRecipes.java
+## gradle
+/.gradle
+/build
+/gradle
+/gradlew
+/gradlew.bat
+
+## ForgeGradle
+/run
+
+## eclipse
+/eclipse
+/.settings
+/.metadata
+/.classpath
+/.project
+/bin
