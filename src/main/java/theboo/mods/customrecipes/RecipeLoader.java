@@ -188,7 +188,7 @@ public class RecipeLoader implements IFuelHandler {
 		try {
 			
 			for(Object i : GameData.getItemRegistry().getKeys().toArray()) {
-				Item item = (Item) i;
+				Item item = (Item) GameData.getItemRegistry().getObject(i);
 				if(item == null) continue;
 				
 				dict.put(StatCollector.translateToLocal(item.getUnlocalizedName()).replace(" ", ""), new ItemStack(item, 1, 0));
@@ -199,7 +199,7 @@ public class RecipeLoader implements IFuelHandler {
 			
 			
 			for(Object b : GameData.getBlockRegistry().getKeys().toArray()) {
-				Block block = (Block) b;
+				Block block = (Block) GameData.getBlockRegistry().getObject(b);
 				if(block == null) continue;
 
 				dict.put(block.getLocalizedName().replace(" ", ""), new ItemStack(block, 1, 0));
