@@ -386,52 +386,44 @@ public class RecipeLoader implements IFuelHandler {
 		
 		// save to global
 		path = file_path;
-
         
 		if(log) Logger.log(Level.INFO, "Started to load recipes at " + file_path);
-        
-        
 		for(int a=0; a < rawFile.size(); a++){
 		    
 	        
-		    if(log) Logger.log(Level.INFO, "Loading Recipes syntaxes at " + file_path);
+		    if(log) Logger.log(Level.INFO, "Loading recipe syntaxes at " + file_path);
 	        
 		    
 			String entry=(String)rawFile.get(a);
 			String entryOrig=entry;
 			
-			if(entry.length()>= 4 && entry.substring(0,1).equals("*")){
-               
+			if(entry.length()>= 4 && entry.substring(0,1).equals("*")){               
 			    if(log) Logger.log(Level.INFO, "Found alias syntax in "+file_path);
 				parseRecipeAlias(file_path, entryOrig, entry);
-
-			}else if(entry.length() >= 16 && entry.substring(0,9).equals("shapeless")){
-
+			}
+			else if(entry.length() >= 16 && entry.substring(0,9).equals("shapeless")){
 	             Logger.log(Level.INFO, "Found shapeless syntax in "+file_path);
-				parseRecipeShapeless(file_path, entryOrig, entry);
-				
-
-			}else if(entry.length() >= 9 && entry.substring(0,4).equals("fuel")){
-               
+				parseRecipeShapeless(file_path, entryOrig, entry);				
+			}
+			else if(entry.length() >= 9 && entry.substring(0,4).equals("fuel")){              
 			    Logger.log(Level.INFO, "Found fuel syntax in "+file_path);
-				parseRecipeFuel(file_path, entryOrig, entry);
-				
-
-			}else if(entry.length()>= 15 && entry.substring(0,8).equals("smelting")){
-                
+				parseRecipeFuel(file_path, entryOrig, entry);				
+			}
+			else if(entry.length()>= 15 && entry.substring(0,8).equals("smelting")){                
 			    Logger.log(Level.INFO, "Found smelting syntax in "+file_path);
 				parseRecipeSmelting(file_path, entryOrig, entry);
-				
-				
-			}else if(entry.length()>= 13 && entry.substring(0,6).equals("shaped")){
-               
+			}
+			else if(entry.length()>= 13 && entry.substring(0,6).equals("shaped")){               
 			    Logger.log(Level.INFO, "Found shaped syntax in "+file_path);
 				parseRecipeShaped(file_path, entryOrig, entry);
-				
 			}
 			else if(entry.length()>= 13 && entry.substring(0,6).equals("remove")){
 	             Logger.log(Level.INFO, "Found remove syntax in "+file_path);
 				parseRecipeRemove(file_path, entryOrig, entry);
+			}
+			else if(entry.length() >= 9 && entry.substring(0,4).equals("clear")){            
+				Logger.log(Level.INFO, "Found clear syntax in "+file_path);
+				parseRecipeClear(file_path, entryOrig, entry);
 			}
 		}
 	}
@@ -844,29 +836,35 @@ public class RecipeLoader implements IFuelHandler {
 		//remove brackets
 		String recipe = entry.replaceAll("[()]","");
 
-		/*int intval=getRecipeId(recipe);
-		
-		if(intval<1){
-			errorUndefined(file_path,entryOrig,recipe);
-			return;
-		}*/
-
         ItemStack stack = getProductStack(recipe);  
         
         Logger.log(Level.INFO, "About to remove recipe with output " + recipe + " itemstack: " + stack.toString());
-        removeRecipesWithResult(stack);
+        removeRecipesWithResult(stack, false);
     }
     
-    private void removeRecipesWithResult(ItemStack resultItem) {
+    private void parseRecipeClear(String file_path, String entryOrig, String entryo) {
+ 		//-----Clear recipe
+ 		String entry=entryo.substring(4); //remove "clear"
+
+ 		//remove brackets
+ 		String recipe = entry.replaceAll("[()]","");
+
+ 		ItemStack stack = getProductStack(recipe);  
+         
+ 		Logger.log(Level.INFO, "About to clear all recipes with output " + recipe + " itemstack: " + stack.toString());
+ 		removeRecipesWithResult(stack, true);
+     }
+    
+    private void removeRecipesWithResult(ItemStack resultItem, boolean clear) {
         ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
 
         for (int scan = 0; scan < recipes.size(); scan++) {
             IRecipe tmpRecipe = (IRecipe) recipes.get(scan);
             ItemStack recipeResult = tmpRecipe.getRecipeOutput();
             
-           /* if(recipeResult.stackSize > 1) {
+            if(clear && recipeResult.stackSize > 1) {
             	resultItem.stackSize = recipeResult.stackSize;
-            }*/
+            }
 
             if (ItemStack.areItemStacksEqual(resultItem, recipeResult)) {
                 Logger.log(Level.INFO, "Removing Recipe: " + recipes.get(scan) + " -> " + recipeResult);

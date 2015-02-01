@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Level;
 import theboo.mods.customrecipes.handlers.CustomRecipesEvents;
 import theboo.mods.customrecipes.lib.Reference;
 import theboo.mods.customrecipes.logger.Logger;
-import theboo.mods.customrecipes.proxy.CommonProxy;
+import theboo.mods.customrecipes.network.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;

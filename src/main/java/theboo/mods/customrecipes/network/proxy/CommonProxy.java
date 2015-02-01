@@ -1,4 +1,4 @@
-package theboo.mods.customrecipes.proxy;
+package theboo.mods.customrecipes.network.proxy;
 
 import java.io.File;
 import java.util.Scanner;
@@ -39,22 +39,5 @@ public class CommonProxy {
 	public void addKeybindings() {
 	}
 	
-	public String getRecipes() {
-		StringBuilder contents = new StringBuilder();
 
-		try {
-			File dir = new File(CustomRecipes.instance.getWorkingFolder() + "/mods/customrecipes");
-			
-			for (File file : dir.listFiles()) {
-				Scanner s = new Scanner(file);
-				contents.append(s.nextLine());
-				s.close();
-			}
-			
-		} catch(Exception ex) {
-			Logger.log(Level.FATAL, "Lol failed to sync noob");
-		}
-		
-		return contents.toString();
-	}
 }

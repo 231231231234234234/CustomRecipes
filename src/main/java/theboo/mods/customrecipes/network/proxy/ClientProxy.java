@@ -1,4 +1,4 @@
-package theboo.mods.customrecipes.proxy;
+package theboo.mods.customrecipes.network.proxy;
 
 
 /**
