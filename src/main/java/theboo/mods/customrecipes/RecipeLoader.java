@@ -609,7 +609,6 @@ public class RecipeLoader implements IFuelHandler {
 			if(piece instanceof Block) piece = new ItemStack((Block)piece,1,-1); 
 			
 			recipe = OAappend(recipe, piece);
-
 		}
 		
 		if(recipe.length <= 0 || recipe.length > 9){
@@ -837,8 +836,7 @@ public class RecipeLoader implements IFuelHandler {
 		}
 	}
 	
-    private void parseRecipeRemove(String file_path, String entryOrig, String entryo)
-	{
+    private void parseRecipeRemove(String file_path, String entryOrig, String entryo) {
 		//-----Remove recipe
 		//remove
 		String entry=entryo.substring(6); //remove "remove"
@@ -846,47 +844,35 @@ public class RecipeLoader implements IFuelHandler {
 		//remove brackets
 		String recipe = entry.replaceAll("[()]","");
 
-		int intval=getRecipeId(recipe);
+		/*int intval=getRecipeId(recipe);
 		
 		if(intval<1){
 			errorUndefined(file_path,entryOrig,recipe);
 			return;
-		}
+		}*/
 
         ItemStack stack = getProductStack(recipe);  
-        Logger.log(Level.INFO, "About to remove recipe with input" + recipe);
-        removeRecipe(stack);
+        
+        Logger.log(Level.INFO, "About to remove recipe with output " + recipe + " itemstack: " + stack.toString());
+        removeRecipesWithResult(stack);
     }
-	private void removeRecipe(ItemStack resultItem)
-	{
-	    ItemStack recipeResult = null;
-	    ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
+    
+    private void removeRecipesWithResult(ItemStack resultItem) {
+        ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
 
-	    for (int scan = 0; scan < recipes.size(); scan++)
-	    {
-	        IRecipe tmpRecipe = (IRecipe) recipes.get(scan);
-	        if (tmpRecipe instanceof ShapedRecipes)
-	        {
-	            ShapedRecipes recipe = (ShapedRecipes)tmpRecipe;
-	            recipeResult = recipe.getRecipeOutput();
-	            Logger.log(Level.INFO, "Found shaped recipe!");
-	        }
+        for (int scan = 0; scan < recipes.size(); scan++) {
+            IRecipe tmpRecipe = (IRecipe) recipes.get(scan);
+            ItemStack recipeResult = tmpRecipe.getRecipeOutput();
+            
+           /* if(recipeResult.stackSize > 1) {
+            	resultItem.stackSize = recipeResult.stackSize;
+            }*/
 
-	        if (tmpRecipe instanceof ShapelessRecipes)
-	        {
-	            ShapelessRecipes recipe = (ShapelessRecipes)tmpRecipe;
-	            recipeResult = recipe.getRecipeOutput();
-	            Logger.log(Level.INFO, "Found shapeless recipe!");
-	        }
-
-	        if (ItemStack.areItemStacksEqual(resultItem, recipeResult))
-	        {
-	            Logger.log(Level.INFO, "Removed Recipe: " + recipes.get(scan) + " -> " + recipeResult);
-	            recipes.remove(scan);
-	        }
-	        else {
-	            Logger.log(Level.WARN, "Couldn't remove the recipe with result: " + resultItem.toString());
-	        }
-	    }
-	}
+            if (ItemStack.areItemStacksEqual(resultItem, recipeResult)) {
+                Logger.log(Level.INFO, "Removing Recipe: " + recipes.get(scan) + " -> " + recipeResult);
+                recipes.remove(scan);
+            }
+        }
+    }
+    
 }

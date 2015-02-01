@@ -5,8 +5,8 @@ public class Reference {
     public static final String MOD_ID = "customrecipes";
     public static final String MOD_NAME = "Custom Recipes";
 	public static final String BUILD_NUMBER = "2";
-    public static final String VERSION_NUMBER = "4.6"+BUILD_NUMBER;
-    public static final double CURRENT_VERSION_DOUBLE = 4.6;
+    public static final String VERSION_NUMBER = "4.7"+BUILD_NUMBER;
+    public static final double CURRENT_VERSION_DOUBLE = 4.7;
     public static final String CHANNEL_NAME = MOD_ID;
     public static final int SECOND_IN_TICKS = 20;
     public static final int SHIFTED_ID_RANGE_CORRECTION = 256;
