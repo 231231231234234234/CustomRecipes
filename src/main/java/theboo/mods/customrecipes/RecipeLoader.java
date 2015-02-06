@@ -60,11 +60,15 @@ public class RecipeLoader implements IFuelHandler {
 	private Hashtable<String,ItemStack> dict = new Hashtable<String,ItemStack>();
 	private Hashtable<String,Integer> fuels = new Hashtable<String,Integer>();
 	private int DICT_VERSION = 0;
-	
 	public static RecipeLoader instance;
+	
+	
+	/**Reicpe API*/
+	public String[] syntaxes;
 	
 	public RecipeLoader() {
 		instance = this;
+		syntaxes = new String[64];
 	}
 	
 	public int getFuel(int i, int j) {
@@ -88,7 +92,7 @@ public class RecipeLoader implements IFuelHandler {
             Logger.log(Level.INFO, "Creating dictionary file.\n");
         }
 
-        loadRecipeFile(CustomRecipes.instance.getWorkingFolder()+"/mods/customrecipes/dictionary.txt", Reference.DEBUG);
+        loadRecipeFile(CustomRecipes.instance.getWorkingFolder()+"/mods/customrecipes/dictionary.txt", false);
         Logger.log(Level.INFO, "Loading dictionary.txt");
 
         if(DICT_VERSION != Dictionary.DICT_VERSION_CURRENT){
@@ -176,8 +180,7 @@ public class RecipeLoader implements IFuelHandler {
 			}
 			out.close();
 		}
-		catch (IOException e)
-		{
+		catch (IOException e) {
 			Logger.log(Level.WARN, "* I/O ERROR: Could not regenerate the dictionary in .minecraft/mods/customrecipes/dictionary.txt");
 		}
 	}
@@ -216,14 +219,13 @@ public class RecipeLoader implements IFuelHandler {
 	
     private int getNumberFromString(String str)
     {
-        try{
+        try {
             int tmpi = Integer.valueOf(str).intValue();
             if(tmpi < -1) {
             	return 32767;
             }
             return (tmpi < -1 ? 0 : tmpi) ;                             
-        } catch (NumberFormatException e)
-        {        
+        } catch (NumberFormatException e) {        
             return 0;
         }
     }
@@ -384,6 +386,7 @@ public class RecipeLoader implements IFuelHandler {
 		//String tmp;
 		ArrayList<String> rawFile=readFile(file_path);
 		
+		
 		// save to global
 		path = file_path;
         
@@ -402,27 +405,27 @@ public class RecipeLoader implements IFuelHandler {
 				parseRecipeAlias(file_path, entryOrig, entry);
 			}
 			else if(entry.length() >= 16 && entry.substring(0,9).equals("shapeless")){
-	             Logger.log(Level.INFO, "Found shapeless syntax in "+file_path);
+				if(log) Logger.log(Level.INFO, "Found shapeless syntax in "+file_path);
 				parseRecipeShapeless(file_path, entryOrig, entry);				
 			}
 			else if(entry.length() >= 9 && entry.substring(0,4).equals("fuel")){              
-			    Logger.log(Level.INFO, "Found fuel syntax in "+file_path);
+				if(log) Logger.log(Level.INFO, "Found fuel syntax in "+file_path);
 				parseRecipeFuel(file_path, entryOrig, entry);				
 			}
 			else if(entry.length()>= 15 && entry.substring(0,8).equals("smelting")){                
-			    Logger.log(Level.INFO, "Found smelting syntax in "+file_path);
+				if(log) Logger.log(Level.INFO, "Found smelting syntax in "+file_path);
 				parseRecipeSmelting(file_path, entryOrig, entry);
 			}
 			else if(entry.length()>= 13 && entry.substring(0,6).equals("shaped")){               
-			    Logger.log(Level.INFO, "Found shaped syntax in "+file_path);
+				if(log) Logger.log(Level.INFO, "Found shaped syntax in "+file_path);
 				parseRecipeShaped(file_path, entryOrig, entry);
 			}
 			else if(entry.length()>= 13 && entry.substring(0,6).equals("remove")){
-	             Logger.log(Level.INFO, "Found remove syntax in "+file_path);
+				if(log) Logger.log(Level.INFO, "Found remove syntax in "+file_path);
 				parseRecipeRemove(file_path, entryOrig, entry);
 			}
-			else if(entry.length() >= 9 && entry.substring(0,4).equals("clear")){            
-				Logger.log(Level.INFO, "Found clear syntax in "+file_path);
+			else if(entry.length() >= 10 && entry.substring(0,5).equals("clear")){            
+				if(log) Logger.log(Level.INFO, "Found clear syntax in "+file_path);
 				parseRecipeClear(file_path, entryOrig, entry);
 			}
 		}
@@ -484,7 +487,6 @@ public class RecipeLoader implements IFuelHandler {
 	          //bis = new BufferedInputStream(fis);
 	          //dis = new DataInputStream(bis);
 	          //bas = new BufferedReader(new InputStreamReader(bis));
-
 	         
 	          String tmpString = reader.readLine(); // Read the first line
 	         
@@ -499,13 +501,17 @@ public class RecipeLoader implements IFuelHandler {
 	                  tmpString = tmpString.replaceAll("\t", "");
 	                  tmpString = tmpString.replaceAll(":", ",");
 	                  tmpString = tmpString.replaceAll("[/|;]", "/");
-
-	                  if (((tmpString.length() >= 4) && (tmpString.substring(0, 1).equals("*"))) || ((tmpString.length() >= 9) && (tmpString.substring(0, 4).equals("fuel"))) || ((tmpString.length() >= 13) && (tmpString.substring(0, 6).equals("shaped"))) || ((tmpString.length() >= 16) && (tmpString.substring(0, 9).equals("shapeless"))) || ((tmpString.length() >= 15) && (tmpString.substring(0, 8).equals("smelting"))) || ((tmpString.length() >= 13) && (tmpString.substring(0, 6).equals("remove"))))
-	                  {
+	                  
+	                  if (((tmpString.length() >= 4) && (tmpString.substring(0, 1).equals("*"))) 
+	                		  || ((tmpString.length() >= 9) && (tmpString.substring(0, 4).equals("fuel"))) 
+	                		  || ((tmpString.length() >= 13) && (tmpString.substring(0, 6).equals("shaped"))) 
+	                		  || ((tmpString.length() >= 16) && (tmpString.substring(0, 9).equals("shapeless"))) 
+	                		  || ((tmpString.length() >= 15) && (tmpString.substring(0, 8).equals("smelting"))) 
+	                		  || ((tmpString.length() >= 13) && (tmpString.substring(0, 6).equals("remove"))) 
+	                		  || ((tmpString.length() >= 10) && (tmpString.substring(0, 5).equals("clear")))) {
 	                        fileContents.add(tmpString);
 	                  }
-	                  else
-	                  {
+	                  else {
 	                        Logger.log(Level.WARN, "\nSyntax error in recipe file:\n" + url + "\n-> " + tmpString + "\n");
 	                  }
 	                }
@@ -527,9 +533,6 @@ public class RecipeLoader implements IFuelHandler {
 	  }
 
 	private void parseRecipeAlias(String fpath, String entryOrig, String entryo){
-		// ---------- dictionary entry --------------
-		//*Name=123
-		
 		String entry=entryo.substring(1); //remove "*"
 		String[] tokens=entry.split("[=]");
 		if(tokens.length!=2){ // identifier, without a value
@@ -844,14 +847,12 @@ public class RecipeLoader implements IFuelHandler {
     
     private void parseRecipeClear(String file_path, String entryOrig, String entryo) {
  		//-----Clear recipe
- 		String entry=entryo.substring(4); //remove "clear"
+ 		String entry=entryo.substring(5); //remove "clear"
 
  		//remove brackets
  		String recipe = entry.replaceAll("[()]","");
-
  		ItemStack stack = getProductStack(recipe);  
-         
- 		Logger.log(Level.INFO, "About to clear all recipes with output " + recipe + " itemstack: " + stack.toString());
+ 		//Logger.log(Level.INFO, "About to clear all recipes with output " + recipe + " itemstack: " + stack.toString());
  		removeRecipesWithResult(stack, true);
      }
     
@@ -861,6 +862,11 @@ public class RecipeLoader implements IFuelHandler {
         for (int scan = 0; scan < recipes.size(); scan++) {
             IRecipe tmpRecipe = (IRecipe) recipes.get(scan);
             ItemStack recipeResult = tmpRecipe.getRecipeOutput();
+            
+            if(recipeResult == null) {
+            	Logger.log(Level.FATAL, "CRASH? WWAWW");
+            	continue;
+            }
             
             if(clear && recipeResult.stackSize > 1) {
             	resultItem.stackSize = recipeResult.stackSize;
