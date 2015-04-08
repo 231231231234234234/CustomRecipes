@@ -48,7 +48,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
  * @author TheBoo
  *   
  */
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION_NUMBER, dependencies = Reference.DEPENDENCIES)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION_NUMBER, dependencies = Reference.DEPENDENCIES, acceptableRemoteVersions="*")
 public class CustomRecipes {
 	
     public static net.minecraftforge.common.config.Configuration config;
