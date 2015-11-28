@@ -4,10 +4,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import org.apache.logging.log4j.Level;
 
 import theboo.mods.customrecipes.CustomRecipes;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 /**
  * Custom Recipes Logger
