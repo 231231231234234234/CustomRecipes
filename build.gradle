@@ -11,18 +11,21 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
 
-version = "1.7.10-4.7"
+version = "1.7.10-5.0"
 group= "theboo.mods.customrecipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "customrecipes"
 
 minecraft {
-    version = "1.7.10-10.13.2.1230"
+    version = "1.8.8-11.15.0.1591-1.8.8"
+    mappings = "snapshot_20151128"
     runDir = "eclipse"
 }
 

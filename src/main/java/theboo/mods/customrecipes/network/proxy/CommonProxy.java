@@ -1,13 +1,5 @@
 package theboo.mods.customrecipes.network.proxy;
 
-import java.io.File;
-import java.util.Scanner;
-
-import org.apache.logging.log4j.Level;
-
-import theboo.mods.customrecipes.CustomRecipes;
-import theboo.mods.customrecipes.logger.Logger;
-
 /**
  * Custom Recipes CommonProxy
  * 
@@ -33,11 +25,6 @@ import theboo.mods.customrecipes.logger.Logger;
  *   
  */
 public class CommonProxy {
-
-	
-	
 	public void addKeybindings() {
 	}
-	
-
 }
