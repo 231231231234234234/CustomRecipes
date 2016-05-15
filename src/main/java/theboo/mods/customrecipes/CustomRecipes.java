@@ -1,12 +1,9 @@
 package theboo.mods.customrecipes;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -55,7 +52,7 @@ import theboo.mods.customrecipes.network.proxy.CommonProxy;
 			if (FMLCommonHandler.instance().getSide().isClient()) {
 				toBeReturned = Minecraft.getMinecraft().mcDataDir;
 			} else {
-				toBeReturned = MinecraftServer.getServer().getFile("");
+				toBeReturned = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("");
 			}
 			return toBeReturned;
 			
@@ -67,7 +64,7 @@ import theboo.mods.customrecipes.network.proxy.CommonProxy;
 	
 	@EventHandler public void preInit(final FMLPreInitializationEvent fml) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				System.out.println("Closing Custom Recipes log...");
 				Logger.logClose();
 			}
@@ -98,14 +95,5 @@ import theboo.mods.customrecipes.network.proxy.CommonProxy;
 		c.load();
 		Reference.DEBUG = c.get(Configuration.CATEGORY_GENERAL, "Enable Extensive Log Messages [Debug Mode]", false).getBoolean(false);
 		c.save();
-	}
-	
-	public static URL getUpdateURL() {
-		try {
-			return new URL("http://pastebin.com/raw.php?i=T3afBrCS");
-		} catch (MalformedURLException ex) {
-			System.out.println("Woops, URL was wrong!");
-			return null;
-		}
 	}
 }
