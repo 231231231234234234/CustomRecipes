@@ -18,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.IFuelHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -143,7 +142,7 @@ public class RecipeLoader implements IFuelHandler {
 	}
 	
 	public void generateAliasByLocalizedName() {
-		Logger.log(Level.INFO, "Adding all the items localized names as dictionary entries...");
+		Logger.log(Level.INFO, "Adding all the items names as dictionary entries...");
 		
 		try {
 			
@@ -152,8 +151,6 @@ public class RecipeLoader implements IFuelHandler {
 				Item item = Item.REGISTRY.getObject((ResourceLocation) i);
 				if (item == null) continue;
 				
-				dict.put(I18n.translateToLocal(item.getUnlocalizedName()).replace(" ", ""), new ItemStack(item, 1, 0));
-				dict.put(I18n.translateToLocal(item.getUnlocalizedName()).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
 				dict.put(item.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(item, 1, 0));
 				dict.put(item.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
 			}
@@ -163,8 +160,6 @@ public class RecipeLoader implements IFuelHandler {
 				Block block = Block.REGISTRY.getObject((ResourceLocation) b);
 				if (block == null) continue;
 				
-				dict.put(block.getLocalizedName().replace(" ", ""), new ItemStack(block, 1, 0));
-				dict.put(block.getLocalizedName().replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
 				dict.put(block.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(block, 1, 0));
 				dict.put(block.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
 			}

@@ -10,6 +10,6 @@ public class Reference {
     public static final int SECOND_IN_TICKS = 20;
     public static final String SERVER_PROXY_CLASS = "theboo.mods.customrecipes.network.proxy.CommonProxy";
     public static final String CLIENT_PROXY_CLASS = "theboo.mods.customrecipes.network.proxy.ClientProxy";
-    public static final String DEPENDENCIES = "required-after:Forge@[12.16.1.1906,)";
+    public static final String DEPENDENCIES = "required-after:Forge@[12.17.0.1920,)";
 	public static boolean DEBUG = false;
 }
