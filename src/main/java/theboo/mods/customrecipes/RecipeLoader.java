@@ -17,9 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.IFuelHandler;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import org.apache.logging.log4j.Level;
@@ -77,7 +76,7 @@ public class RecipeLoader implements IFuelHandler {
 		File dir = new File(CustomRecipes.instance.getWorkingFolder() + "/mods/customrecipes/");
 		
 		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+			@Override public boolean accept(File dir, String name) {
 				return !name.startsWith(".") && !name.substring(name.length() - 1).equals("~");
 			}
 		};
@@ -88,7 +87,7 @@ public class RecipeLoader implements IFuelHandler {
 			(new File(CustomRecipes.instance.getWorkingFolder() + "/mods/customrecipes/")).mkdirs();
 			try {
 				BufferedWriter out = new BufferedWriter(new FileWriter(CustomRecipes.instance.getWorkingFolder() + "/mods/customrecipes/dictionary_custom.txt"));
-				out.write("# *** CUSTOM DICTIONARY ***\n" + "# Here you can define aliases for mod items and blocks.\n" + "#\n" + "# To prevent confussion: You CAN'T create new blocks and items with this file.\n" + "# They are added by other mods. This file only lets you define aliases for these items.\n" + "#\n" + "# This file will be read right after dictionary.txt to make sure\n" + "# all your following recipes (in other files) can access these aliases.\n" + "#\n" + "# Example alias definition:\n" + "# silmarilShoes = 7859\n" + "# rubyGem = 9958,13  where 9958 is ID, 13 is DAMAGE\n#\n\n");
+				out.write("# *** CUSTOM DICTIONARY ***\n" + "# Here you can define aliases for mod items and blocks.\n" + "#\n" + "# To prevent confussion: You CAN'T create new blocks and items with this file.\n" + "# They are added by other mods. This file only lets you define aliases for these items.\n" + "#\n" + "# This file will be read right after dictionary.txt to make sure\n" + "# all your following recipes (in other files) can access these aliases.\n" + "#\n" + "# Example alias definition:\n" + "# silmarilShoes = AMod:silmarilShoes\n" + "# rubyGem = AMod:rubyGem,13  where AMod:rubyGem is ID, 13 is DAMAGE\n#\n\n");
 				
 				fail = false;
 				out.close();
@@ -143,26 +142,24 @@ public class RecipeLoader implements IFuelHandler {
 	}
 	
 	public void generateAliasByLocalizedName() {
-		Logger.log(Level.INFO, "Adding all the items localized names as dictionary entries...");
+		Logger.log(Level.INFO, "Adding all the items names as dictionary entries...");
 		
 		try {
 			
-			for (Object i : GameData.getItemRegistry().getKeys().toArray()) {
-				Item item = (Item) GameData.getItemRegistry().getObject(i);
+			for (Object i : Item.REGISTRY.getKeys().toArray()) {
+				if (!(i instanceof ResourceLocation)) continue;
+				Item item = Item.REGISTRY.getObject((ResourceLocation) i);
 				if (item == null) continue;
 				
-				dict.put(StatCollector.translateToLocal(item.getUnlocalizedName()).replace(" ", ""), new ItemStack(item, 1, 0));
-				dict.put(StatCollector.translateToLocal(item.getUnlocalizedName()).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
 				dict.put(item.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(item, 1, 0));
 				dict.put(item.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(item, 1, 0));
 			}
 			
-			for (Object b : GameData.getBlockRegistry().getKeys().toArray()) {
-				Block block = (Block) GameData.getBlockRegistry().getObject(b);
+			for (Object b : Block.REGISTRY.getKeys().toArray()) {
+				if (!(b instanceof ResourceLocation)) continue;
+				Block block = Block.REGISTRY.getObject((ResourceLocation) b);
 				if (block == null) continue;
 				
-				dict.put(block.getLocalizedName().replace(" ", ""), new ItemStack(block, 1, 0));
-				dict.put(block.getLocalizedName().replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
 				dict.put(block.getUnlocalizedName().substring(5).replace(" ", ""), new ItemStack(block, 1, 0));
 				dict.put(block.getUnlocalizedName().substring(5).replace(" ", "").toLowerCase(), new ItemStack(block, 1, 0));
 			}
@@ -281,7 +278,7 @@ public class RecipeLoader implements IFuelHandler {
 					item = item.substring(0, item.lastIndexOf(","));
 				}
 				
-				Item foundItem = GameRegistry.findItem(mod, item);
+				Item foundItem = Item.REGISTRY.getObject(new ResourceLocation(mod, item));
 				if (foundItem == null) return null;
 				return new ItemStack(foundItem, 1, meta);
 			} else {
@@ -367,7 +364,7 @@ public class RecipeLoader implements IFuelHandler {
 		}
 	}
 	
-	private static final String ERR_MSG_UNDEFINED = "Undefined alias or wrong ID (no such block or item exists).\nIf you are trying to get a mod item, try adding 256 to the id value.";
+	private static final String ERR_MSG_UNDEFINED = "Undefined alias or wrong ID (no such block or item exists).";
 	private static final String ERR_MSG_SYNTAX = "Syntax error.";
 	private static final String ERR_MSG_SHAPE = "Recipe is not rectangular or is larger than 3x3.";
 	private static final String ERR_MSG_NOBURNTIME = "No burn time specified. Recipe does not make sense.";

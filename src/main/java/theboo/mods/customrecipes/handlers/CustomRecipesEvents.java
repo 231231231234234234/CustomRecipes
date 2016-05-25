@@ -15,8 +15,8 @@ public class CustomRecipesEvents {
 	
 	@SubscribeEvent
 	public void worldLoad(EntityJoinWorldEvent event) {
-		if(!(event.entity instanceof EntityPlayer)) return;
-		if(event.world.isRemote) return;
+		if(!(event.getEntity() instanceof EntityPlayer)) return;
+		if(event.getWorld().isRemote) return;
 		if(checked) return;	
 		checked = true;
 		Logger.log(Level.INFO, "Reloading recipes...");
